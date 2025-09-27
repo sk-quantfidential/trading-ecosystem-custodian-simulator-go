@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/quantfidential/trading-ecosystem/custodian-simulator-go/internal/config"
+	"github.com/quantfidential/trading-ecosystem/custodian-simulator-go/internal/infrastructure"
 )
 
 // TestServiceDiscovery_RedPhase defines the expected behaviors for service discovery integration
@@ -153,21 +154,11 @@ type ServiceDiscovery interface {
 	Connect(ctx context.Context) error
 	Disconnect(ctx context.Context) error
 	RegisterService(ctx context.Context) error
-	DiscoverServices(ctx context.Context, serviceName string) ([]ServiceInfo, error)
+	DiscoverServices(ctx context.Context, serviceName string) ([]infrastructure.ServiceInfo, error)
 	StartHeartbeat(ctx context.Context)
 }
 
-type ServiceInfo struct {
-	Name     string    `json:"name"`
-	Version  string    `json:"version"`
-	Host     string    `json:"host"`
-	GRPCPort int       `json:"grpc_port"`
-	HTTPPort int       `json:"http_port"`
-	Status   string    `json:"status"`
-	LastSeen time.Time `json:"last_seen"`
-}
-
-// Constructor function that needs to be implemented
+// Constructor function that creates a new service discovery client
 func NewServiceDiscovery(cfg *config.Config) ServiceDiscovery {
-	panic("TDD Red Phase: NewServiceDiscovery not implemented yet")
+	return infrastructure.NewServiceDiscovery(cfg)
 }
