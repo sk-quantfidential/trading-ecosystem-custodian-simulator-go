@@ -28,10 +28,7 @@ func main() {
 	logger.SetLevel(logrus.InfoLevel)
 	logger.SetFormatter(&logrus.JSONFormatter{})
 
-	custodianService := services.NewCustodianService(logger)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	custodianService := services.NewCustodianService(cfg, logger)
 
 	grpcServer := setupGRPCServer(cfg, custodianService, logger)
 	httpServer := setupHTTPServer(cfg, custodianService, logger)
