@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/quantfidential/trading-ecosystem/custodian-simulator-go/internal/config"
+	"github.com/quantfidential/trading-ecosystem/custodian-simulator-go/internal/infrastructure"
 )
 
 // TestInterServiceCommunication_RedPhase defines the expected behaviors for inter-service communication
@@ -262,58 +263,19 @@ func TestInterServiceCommunication_ErrorHandling(t *testing.T) {
 type InterServiceClientManager interface {
 	Initialize(ctx context.Context) error
 	Cleanup(ctx context.Context) error
-	GetExchangeSimulatorClient(ctx context.Context) (ExchangeSimulatorClient, error)
-	GetAuditCorrelatorClient(ctx context.Context) (AuditCorrelatorClient, error)
-	GetClientByName(ctx context.Context, serviceName string) (ServiceClient, error)
-	DiscoverServices(ctx context.Context) ([]ServiceInfo, error)
-	GetConnectionStats() ConnectionStats
-}
-
-type ServiceClient interface {
-	HealthCheck(ctx context.Context) (HealthStatus, error)
-}
-
-type ExchangeSimulatorClient interface {
-	ServiceClient
-	GetTradingStatus(ctx context.Context) (TradingStatus, error)
-}
-
-type AuditCorrelatorClient interface {
-	ServiceClient
-	GetAuditMetrics(ctx context.Context) (AuditMetrics, error)
-}
-
-type HealthStatus struct {
-	Status      string    `json:"status"`
-	LastChecked time.Time `json:"last_checked"`
-	Details     string    `json:"details"`
-}
-
-type TradingStatus struct {
-	ActiveTrades     int       `json:"active_trades"`
-	TotalVolume      int64     `json:"total_volume"`
-	LastTradeTime    time.Time `json:"last_trade_time"`
-}
-
-type AuditMetrics struct {
-	TotalEvents      int64     `json:"total_events"`
-	CorrelatedEvents int64     `json:"correlated_events"`
-	LastUpdated      time.Time `json:"last_updated"`
-}
-
-type ConnectionStats struct {
-	ActiveConnections int64 `json:"active_connections"`
-	TotalConnections  int64 `json:"total_connections"`
-	FailedConnections int64 `json:"failed_connections"`
+	GetExchangeSimulatorClient(ctx context.Context) (infrastructure.ExchangeSimulatorClientInterface, error)
+	GetAuditCorrelatorClient(ctx context.Context) (infrastructure.AuditCorrelatorClientInterface, error)
+	GetClientByName(ctx context.Context, serviceName string) (infrastructure.ServiceClientInterface, error)
+	DiscoverServices(ctx context.Context) ([]infrastructure.ServiceInfo, error)
+	GetConnectionStats() infrastructure.ConnectionStats
 }
 
 // Error handling
 func IsServiceUnavailableError(err error) bool {
-	// Implementation will check error type
-	panic("TDD Red Phase: IsServiceUnavailableError not implemented yet")
+	return infrastructure.IsServiceUnavailableError(err)
 }
 
-// Constructor function that needs to be implemented
+// Constructor function that creates a new inter-service client manager
 func NewInterServiceClientManager(cfg *config.Config) InterServiceClientManager {
-	panic("TDD Red Phase: NewInterServiceClientManager not implemented yet")
+	return infrastructure.NewInterServiceClientManager(cfg)
 }
