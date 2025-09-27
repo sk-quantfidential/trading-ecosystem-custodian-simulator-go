@@ -3,21 +3,34 @@ package config
 import (
 	"os"
 	"strconv"
+	"time"
 )
 
 type Config struct {
-	HTTPPort int
-	GRPCPort int
-	LogLevel string
-	RedisURL string
+	ServiceName             string
+	ServiceVersion          string
+	HTTPPort                int
+	GRPCPort                int
+	LogLevel                string
+	RedisURL                string
+	ConfigurationServiceURL string
+	RequestTimeout          time.Duration
+	CacheTTL                time.Duration
+	HealthCheckInterval     time.Duration
 }
 
 func Load() *Config {
 	return &Config{
-		HTTPPort: getEnvAsInt("HTTP_PORT", 8082),
-		GRPCPort: getEnvAsInt("GRPC_PORT", 9092),
-		LogLevel: getEnv("LOG_LEVEL", "info"),
-		RedisURL: getEnv("REDIS_URL", "redis://localhost:6379"),
+		ServiceName:             getEnv("SERVICE_NAME", "custodian-simulator"),
+		ServiceVersion:          getEnv("SERVICE_VERSION", "1.0.0"),
+		HTTPPort:                getEnvAsInt("HTTP_PORT", 8084),
+		GRPCPort:                getEnvAsInt("GRPC_PORT", 9094),
+		LogLevel:                getEnv("LOG_LEVEL", "info"),
+		RedisURL:                getEnv("REDIS_URL", "redis://localhost:6379"),
+		ConfigurationServiceURL: getEnv("CONFIG_SERVICE_URL", "http://localhost:8090"),
+		RequestTimeout:          getEnvAsDuration("REQUEST_TIMEOUT", 5*time.Second),
+		CacheTTL:                getEnvAsDuration("CACHE_TTL", 5*time.Minute),
+		HealthCheckInterval:     getEnvAsDuration("HEALTH_CHECK_INTERVAL", 30*time.Second),
 	}
 }
 
@@ -32,6 +45,15 @@ func getEnvAsInt(key string, defaultValue int) int {
 	if value := os.Getenv(key); value != "" {
 		if intValue, err := strconv.Atoi(value); err == nil {
 			return intValue
+		}
+	}
+	return defaultValue
+}
+
+func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
+	if value := os.Getenv(key); value != "" {
+		if duration, err := time.ParseDuration(value); err == nil {
+			return duration
 		}
 	}
 	return defaultValue

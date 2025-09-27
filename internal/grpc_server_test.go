@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 
 	"github.com/quantfidential/trading-ecosystem/custodian-simulator-go/internal/config"
+	grpcserver "github.com/quantfidential/trading-ecosystem/custodian-simulator-go/internal/presentation/grpc"
 )
 
 // TestCustodianGRPCServer_RedPhase defines the expected behaviors for enhanced gRPC server
@@ -196,17 +197,10 @@ func TestCustodianGRPCServer_Metrics(t *testing.T) {
 type CustodianGRPCServer interface {
 	Serve(lis net.Listener) error
 	GracefulStop()
-	GetMetrics() ServerMetrics
+	GetMetrics() grpcserver.ServerMetrics
 }
 
-type ServerMetrics struct {
-	ActiveConnections int64             `json:"active_connections"`
-	TotalRequests     int64             `json:"total_requests"`
-	ServiceStatus     map[string]string `json:"service_status"`
-	Uptime            time.Duration     `json:"uptime"`
-}
-
-// Constructor function that needs to be implemented
+// NewCustodianGRPCServer creates a new custodian gRPC server
 func NewCustodianGRPCServer(cfg *config.Config) CustodianGRPCServer {
-	panic("TDD Red Phase: NewCustodianGRPCServer not implemented yet")
+	return grpcserver.NewCustodianGRPCServer(cfg)
 }
