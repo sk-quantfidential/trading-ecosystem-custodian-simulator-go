@@ -4,10 +4,14 @@ go 1.24
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/joho/godotenv v1.5.1
+	github.com/quantfidential/trading-ecosystem/custodian-data-adapter-go v0.0.0-00010101000000-000000000000
 	github.com/redis/go-redis/v9 v9.15.0
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.58.3
 )
+
+replace github.com/quantfidential/trading-ecosystem/custodian-data-adapter-go => ../custodian-data-adapter-go
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
@@ -24,6 +28,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
