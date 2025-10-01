@@ -1,21 +1,34 @@
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
-WORKDIR /app
+WORKDIR /build
 
-RUN apk add --no-cache git ca-certificates
+# Copy custodian-data-adapter-go dependency
+COPY custodian-data-adapter-go/ ./custodian-data-adapter-go/
 
-COPY go.mod go.sum ./
+# Copy custodian-simulator-go files
+COPY custodian-simulator-go/go.mod custodian-simulator-go/go.sum ./custodian-simulator-go/
+WORKDIR /build/custodian-simulator-go
 RUN go mod download
 
-COPY . .
+# Copy source and build
+COPY custodian-simulator-go/ .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o custodian-simulator ./cmd/server
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/server
+# Runtime stage
+FROM alpine:3.19
 
-FROM scratch
+RUN apk --no-cache add ca-certificates wget
+RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /app/main /app/main
+WORKDIR /app
+COPY --from=builder /build/custodian-simulator-go/custodian-simulator /app/custodian-simulator
+RUN chown -R appuser:appgroup /app
 
-EXPOSE 8082 9092
+USER appuser
 
-CMD ["/app/main"]
+EXPOSE 8084 9094
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:8084/api/v1/health || exit 1
+
+CMD ["./custodian-simulator"]
