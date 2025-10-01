@@ -28,6 +28,14 @@ func main() {
 	logger.SetLevel(logrus.InfoLevel)
 	logger.SetFormatter(&logrus.JSONFormatter{})
 
+	// Initialize DataAdapter
+	ctx := context.Background()
+	if err := cfg.InitializeDataAdapter(ctx, logger); err != nil {
+		logger.WithError(err).Warn("Failed to initialize data adapter, continuing in stub mode")
+	} else {
+		logger.Info("Data adapter initialized successfully")
+	}
+
 	custodianService := services.NewCustodianService(cfg, logger)
 
 	grpcServer := setupGRPCServer(cfg, custodianService, logger)
@@ -55,6 +63,11 @@ func main() {
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
+
+	// Disconnect DataAdapter
+	if err := cfg.DisconnectDataAdapter(shutdownCtx); err != nil {
+		logger.WithError(err).Error("Failed to disconnect data adapter")
+	}
 
 	if err := httpServer.Shutdown(shutdownCtx); err != nil {
 		logger.WithError(err).Error("HTTP server forced to shutdown")
