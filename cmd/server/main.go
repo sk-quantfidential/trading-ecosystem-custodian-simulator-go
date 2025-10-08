@@ -28,6 +28,15 @@ func main() {
 	logger.SetLevel(logrus.InfoLevel)
 	logger.SetFormatter(&logrus.JSONFormatter{})
 
+	// Add instance context to all logs
+	logger = logger.WithFields(logrus.Fields{
+		"service_name":  cfg.ServiceName,
+		"instance_name": cfg.ServiceInstanceName,
+		"environment":   cfg.Environment,
+	}).Logger
+
+	logger.Info("Starting custodian-simulator service")
+
 	// Initialize DataAdapter
 	ctx := context.Background()
 	if err := cfg.InitializeDataAdapter(ctx, logger); err != nil {
@@ -91,7 +100,7 @@ func setupHTTPServer(cfg *config.Config, custodianService *services.CustodianSer
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	healthHandler := handlers.NewHealthHandler(logger)
+	healthHandler := handlers.NewHealthHandlerWithConfig(cfg, logger)
 
 	v1 := router.Group("/api/v1")
 	{
