@@ -457,7 +457,7 @@ RUN go build -o custodian-simulator cmd/server/main.go
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=builder /app/custodian-simulator /usr/local/bin/
-EXPOSE 8081 50052
+EXPOSE 8080 50051
 CMD ["custodian-simulator"]
 ```
 

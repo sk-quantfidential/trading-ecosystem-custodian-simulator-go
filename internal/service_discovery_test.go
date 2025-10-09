@@ -25,8 +25,8 @@ func TestServiceDiscovery_Connect(t *testing.T) {
 				ServiceName:         "custodian-simulator",
 				ServiceVersion:      "1.0.0",
 				RedisURL:            "redis://localhost:6379",
-				GRPCPort:           9094,
-				HTTPPort:           8084,
+				GRPCPort:            9094,
+				HTTPPort:            8084,
 				HealthCheckInterval: 30 * time.Second,
 			},
 			wantErr: false,
@@ -37,8 +37,8 @@ func TestServiceDiscovery_Connect(t *testing.T) {
 				ServiceName:         "custodian-simulator",
 				ServiceVersion:      "1.0.0",
 				RedisURL:            "invalid://url",
-				GRPCPort:           9094,
-				HTTPPort:           8084,
+				GRPCPort:            9094,
+				HTTPPort:            8084,
 				HealthCheckInterval: 30 * time.Second,
 			},
 			wantErr: true,
@@ -75,8 +75,8 @@ func TestServiceDiscovery_RegisterService(t *testing.T) {
 			ServiceName:         "custodian-simulator",
 			ServiceVersion:      "1.0.0",
 			RedisURL:            "redis://localhost:6379",
-			GRPCPort:           50052,
-			HTTPPort:           8084,
+			GRPCPort:            50052,
+			HTTPPort:            8084,
 			HealthCheckInterval: 100 * time.Millisecond,
 		})
 
@@ -112,8 +112,8 @@ func TestServiceDiscovery_HealthCheck(t *testing.T) {
 			ServiceName:         "custodian-simulator",
 			ServiceVersion:      "1.0.0",
 			RedisURL:            "redis://localhost:6379",
-			GRPCPort:           9094,
-			HTTPPort:           8084,
+			GRPCPort:            9094,
+			HTTPPort:            8084,
 			HealthCheckInterval: 100 * time.Millisecond,
 		})
 
