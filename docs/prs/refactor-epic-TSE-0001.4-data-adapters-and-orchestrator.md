@@ -43,9 +43,9 @@ This PR integrates the custodian-simulator-go service with the newly created cus
 
 ```go
 require (
-	github.com/joho/godotenv v1.5.1
-	github.com/quantfidential/trading-ecosystem/custodian-data-adapter-go v0.0.0-00010101000000-000000000000
-	// ... other dependencies
+ github.com/joho/godotenv v1.5.1
+ github.com/quantfidential/trading-ecosystem/custodian-data-adapter-go v0.0.0-00010101000000-000000000000
+ // ... other dependencies
 )
 
 replace github.com/quantfidential/trading-ecosystem/custodian-data-adapter-go => ../custodian-data-adapter-go
@@ -65,9 +65,9 @@ replace github.com/quantfidential/trading-ecosystem/custodian-data-adapter-go =>
 #### New Fields
 ```go
 type Config struct {
-	// ... existing fields
-	PostgresURL string
-	dataAdapter adapters.DataAdapter
+ // ... existing fields
+ PostgresURL string
+ dataAdapter adapters.DataAdapter
 }
 ```
 
@@ -76,35 +76,35 @@ type Config struct {
 **InitializeDataAdapter(ctx, logger) error**
 ```go
 func (c *Config) InitializeDataAdapter(ctx context.Context, logger *logrus.Logger) error {
-	adapter, err := adapters.NewCustodianDataAdapterFromEnv(logger)
-	if err != nil {
-		logger.WithError(err).Warn("Failed to create data adapter, will use stub mode")
-		return err
-	}
-	if err := adapter.Connect(ctx); err != nil {
-		logger.WithError(err).Warn("Failed to connect data adapter, will use stub mode")
-		return err
-	}
-	c.dataAdapter = adapter
-	logger.Info("Data adapter initialized successfully")
-	return nil
+ adapter, err := adapters.NewCustodianDataAdapterFromEnv(logger)
+ if err != nil {
+  logger.WithError(err).Warn("Failed to create data adapter, will use stub mode")
+  return err
+ }
+ if err := adapter.Connect(ctx); err != nil {
+  logger.WithError(err).Warn("Failed to connect data adapter, will use stub mode")
+  return err
+ }
+ c.dataAdapter = adapter
+ logger.Info("Data adapter initialized successfully")
+ return nil
 }
 ```
 
 **GetDataAdapter() adapters.DataAdapter**
 ```go
 func (c *Config) GetDataAdapter() adapters.DataAdapter {
-	return c.dataAdapter
+ return c.dataAdapter
 }
 ```
 
 **DisconnectDataAdapter(ctx) error**
 ```go
 func (c *Config) DisconnectDataAdapter(ctx context.Context) error {
-	if c.dataAdapter != nil {
-		return c.dataAdapter.Disconnect(ctx)
-	}
-	return nil
+ if c.dataAdapter != nil {
+  return c.dataAdapter.Disconnect(ctx)
+ }
+ return nil
 }
 ```
 
@@ -123,40 +123,40 @@ func (c *Config) DisconnectDataAdapter(ctx context.Context) error {
 #### Startup Integration
 ```go
 func main() {
-	cfg := config.Load()
-	logger := logrus.New()
-	logger.SetLevel(logrus.InfoLevel)
-	logger.SetFormatter(&logrus.JSONFormatter{})
+ cfg := config.Load()
+ logger := logrus.New()
+ logger.SetLevel(logrus.InfoLevel)
+ logger.SetFormatter(&logrus.JSONFormatter{})
 
-	// Initialize DataAdapter
-	ctx := context.Background()
-	if err := cfg.InitializeDataAdapter(ctx, logger); err != nil {
-		logger.WithError(err).Warn("Failed to initialize data adapter, continuing in stub mode")
-	} else {
-		logger.Info("Data adapter initialized successfully")
-	}
+ // Initialize DataAdapter
+ ctx := context.Background()
+ if err := cfg.InitializeDataAdapter(ctx, logger); err != nil {
+  logger.WithError(err).Warn("Failed to initialize data adapter, continuing in stub mode")
+ } else {
+  logger.Info("Data adapter initialized successfully")
+ }
 
-	custodianService := services.NewCustodianService(cfg, logger)
-	// ... server setup
+ custodianService := services.NewCustodianService(cfg, logger)
+ // ... server setup
 }
 ```
 
 #### Shutdown Integration
 ```go
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+ quit := make(chan os.Signal, 1)
+ signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+ <-quit
 
-	logger.Info("Shutting down servers...")
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer shutdownCancel()
+ logger.Info("Shutting down servers...")
+ shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
+ defer shutdownCancel()
 
-	// Disconnect DataAdapter
-	if err := cfg.DisconnectDataAdapter(shutdownCtx); err != nil {
-		logger.WithError(err).Error("Failed to disconnect data adapter")
-	}
+ // Disconnect DataAdapter
+ if err := cfg.DisconnectDataAdapter(shutdownCtx); err != nil {
+  logger.WithError(err).Error("Failed to disconnect data adapter")
+ }
 
-	// ... HTTP/gRPC shutdown
+ // ... HTTP/gRPC shutdown
 ```
 
 **Impact:**
