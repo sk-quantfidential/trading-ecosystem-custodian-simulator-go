@@ -36,7 +36,7 @@ This PR implements the complete multi-instance infrastructure foundation (TSE-00
 
 ---
 
-## Detailed Changes
+## Implementation Details
 
 ### 1. Multi-Instance Infrastructure (TSE-0001.12.0)
 

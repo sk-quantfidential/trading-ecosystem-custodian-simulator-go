@@ -21,7 +21,7 @@ This PR integrates the custodian-simulator-go service with the newly created cus
 
 ---
 
-## Changes Overview
+## What Changed
 
 ### Files Modified (7 files)
 
@@ -35,7 +35,7 @@ This PR integrates the custodian-simulator-go service with the newly created cus
 
 ---
 
-## Detailed Changes
+## Implementation Details
 
 ### 1. Dependency Management (go.mod)
 
