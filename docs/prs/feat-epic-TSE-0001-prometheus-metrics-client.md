@@ -22,7 +22,7 @@ This PR implements the complete multi-instance infrastructure foundation (TSE-00
 
 ---
 
-## Changes Overview
+## What Changed
 
 | Component | Commits | Files | Impact |
 |-----------|---------|-------|--------|
