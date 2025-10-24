@@ -21,7 +21,7 @@ This PR integrates the custodian-simulator-go service with the newly created cus
 
 ---
 
-## Changes Overview
+## What Changed
 
 ### Files Modified (7 files)
 
@@ -35,7 +35,7 @@ This PR integrates the custodian-simulator-go service with the newly created cus
 
 ---
 
-## Detailed Changes
+## Implementation Details
 
 ### 1. Dependency Management (go.mod)
 
@@ -200,7 +200,7 @@ RUN chown -R appuser:appgroup /app
 
 USER appuser
 
-EXPOSE 8084 9094
+EXPOSE 8080 50051
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://localhost:8084/api/v1/health || exit 1
@@ -290,8 +290,8 @@ LOG_FORMAT=json
     container_name: trading-ecosystem-custodian-simulator
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8084:8084"  # HTTP port
-      - "127.0.0.1:9094:9094"  # gRPC port
+      - "127.0.0.1:8083:8080"  # HTTP port
+      - "127.0.0.1:50053:50051"  # gRPC port
     networks:
       trading-ecosystem:
         ipv4_address: 172.20.0.81
